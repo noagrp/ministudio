@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mini Studio</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        header h1 {
+            font-size: 20px;
+            font-weight: 400;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #ffffff;
+            padding-bottom: 8px;
+        }
+
+        .disclaimer {
+            font-size: 11px;
+            color: #888888;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .section-box {
+            border: 1px solid #ffffff;
+            padding: 12px;
+        }
+
+        .section-box h2 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            color: #888888;
+        }
+
+        .info-text {
+            font-size: 13px;
+            line-height: 1.5;
+            color: #cccccc;
+        }
+
+        /* Collapsible Dropdown Help Panel Styles */
+        .guide-details {
+            width: 100%;
+            border: 1px solid #ffffff;
+            background-color: #000000;
+            cursor: pointer;
+        }
+
+        .guide-summary {
+            padding: 12px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .guide-summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .guide-summary::after {
+            content: "+";
+            font-size: 14px;
+        }
+
+        .guide-details[open] .guide-summary::after {
+            content: "−";
+        }
+
+        .guide-content {
+            padding: 0 12px 12px 12px;
+            border-top: 1px dashed #333333;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #aaaaaa;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .guide-content h3 {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #ffffff;
+            margin-top: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .guide-content code {
+            background-color: #111111;
+            padding: 2px 4px;
+            color: #ffffff;
+            font-family: monospace;
+        }
+
+        select {
+            width: 100%;
+            background-color: #000000;
+            border: 1px solid #ffffff;
+            color: #ffffff;
+            padding: 11px;
+            font-size: 14px;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'><path stroke='%23ffffff' stroke-width='1' d='M1 1l4 4 4-4'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            letter-spacing: 0.5px;
+            border-radius: 0;
+            margin-bottom: 8px;
+        }
+
+        select:last-child {
+            margin-bottom: 0;
+        }
+
+        .workspace-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .track-column {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .track-column label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #888888;
+        }
+
+        textarea {
+            width: 100%;
+            height: 170px;
+            background-color: #000000;
+            border: 1px solid #ffffff;
+            color: #ffffff;
+            padding: 10px;
+            font-size: 13px;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+            font-family: "Courier New", Courier, monospace;
+            border-radius: 0;
+        }
+
+        textarea:focus {
+            background-color: #050505;
+            border-color: #aaaaaa;
+        }
+
+        .mixer-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .mixer-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="checkbox"] {
+            accent-color: #ffffff;
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        button {
+            flex: 1;
+            background-color: #000000;
+            color: #ffffff;
+            border: 1px solid #ffffff;
+            padding: 14px;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            border-radius: 0;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        button:disabled {
+            border-color: #333333;
+            color: #333333;
+            cursor: not-allowed;
+        }
+
+        .btn-record.recording-active {
+            background-color: #ffffff;
+            color: #000000;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+            border-top: 1px dashed #333333;
+            padding-top: 8px;
+        }
+
+        .status-val {
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Mini Studio</h1>
+        <div class="disclaimer">Notice: High-fidelity web audio track sequencer pipeline.</div>
+    </header>
+
+    <!-- NEW INTERACTIVE HOW-TO PANEL MODULE -->
+    <details class="guide-details">
+        <summary class="guide-summary">How-To Production Guide & Cheatsheet</summary>
+        <div class="guide-content">
+            <div>
+                <h3>1. The Tracking Alignment Rule</h3>
+                The engine matches inputs row-by-row. If you put 5 words in the Lyrics column, you must put 5 corresponding value elements inside the Beats and Pitch columns. Separate entries using single spaces or standard line breaks.
+            </div>
+            <div>
+                <h3>2. Rhythmic Values (Beats Column)</h3>
+                Use standard number values to build time signatures:
+                <br>• <code>1</code> = Standard Quarter Note (Baseline pacing)
+                <br>• <code>0.5</code> = Swift Eighth Note (Fast runs / Rapid delivery)
+                <br>• <code>4</code> = Whole Note (Long, atmospheric vocal holds)
+                <br>• <code>1.5</code> or <code>0.25</code> = Advanced floating syncopations
+            </div>
+            <div>
+                <h3>3. Pitch Commands (Pitch Column)</h3>
+                Bypass default configurations item-by-item using explicit keys:
+                <br>• <code>L</code> / <code>M</code> / <code>H</code> = Low, Medium, and High default fields.
+                <br>• <code>do</code> <code>re</code> <code>mi</code> <code>fa</code> <code>so</code> <code>la</code> <code>di</code> = Precise chromatic solfège notation nodes.
+            </div>
+            <div>
+                <h3>4. Studio Special Commands</h3>
+                <br>• <b>Vocal Breaks:</b> Type an underscore <code>_</code> in the Lyrics column to command a vocal rest. The band will play a background fill while the singer stays silent.
+                <br>• <b>Micro-Hesitations:</b> Add a comma <code>,</code> or period <code>.</code> to the end of a word to add a subtle human pause after that syllable.
+            </div>
+        </div>
+    </details>
+
+    <div class="section-box">
+        <h2>Multi-Track Workspace</h2>
+        <div class="workspace-grid">
+            <div class="track-column">
+                <label>1. Lyrics (Words)</label>
+                <textarea id="trackLyrics" placeholder="neon&#10;lights&#10;_&#10;glow&#10;soft"></textarea>
+            </div>
+            <div class="track-column">
+                <label>2. Beats (Beats)</label>
+                <textarea id="trackBeats" placeholder="1&#10;1&#10;2&#10;1&#10;4"></textarea>
+            </div>
+            <div class="track-column">
+                <label>3. Pitch (Note)</label>
+                <textarea id="trackPitches" placeholder="H&#10;M&#10;L&#10;do&#10;mi"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-box">
+        <h2>Production Settings & Harmonics</h2>
+        <select id="genreSelect">
+            <option value="pop">Pop / Commercial Dance (Steady 120 BPM)</option>
+            <option value="hiphop">Hip-Hop / Urban R&B (Boom-Bap 90 BPM)</option>
+            <option value="rock">Rock / Indie Alternative (Crunchy 135 BPM)</option>
+            <option value="lofi">Lo-Fi Chill / Chillhop (Vintage 75 BPM)</option>
+            <option value="synthwave">Synthwave / Outrun Retro (1980s 110 BPM)</option>
+            <option value="dnb">Liquid Drum & Bass (Rapid 174 BPM)</option>
+            <option value="neosoul">Neo-Soul / Future Jazz (Swinging 84 BPM)</option>
+            <option value="cyberpunk">Cyberpunk / Industrial EBM (Heavy 100 BPM)</option>
+        </select>
+        <select id="vocalProfileSelect">
+            <option value="female">Vocal Range Matrix: Standard Middle Octave (0)</option>
+            <option value="male">Vocal Range Matrix: Deep Low Octave (-1)</option>
+            <option value="child">Vocal Range Matrix: Soaring High Octave (+1)</option>
+            <option value="whistle">Vocal Range Matrix: Whistle Hyper Octave (+2)</option>
+        </select>
+        <select id="scaleSelect">
+            <option value="major">Harmonic Scale: Ionian Mode (Bright Major Key)</option>
+            <option value="minor">Harmonic Scale: Aeolian Mode (Melancholy Minor Key)</option>
+            <option value="dorian">Harmonic Scale: Dorian Mode (Sophisticated R&B / House Vibe)</option>
+            <option value="phrygian">Harmonic Scale: Phrygian Mode (Dark / Heavy Hip-Hop Vibe)</option>
+            <option value="mixolydian">Harmonic Scale: Mixolydian Mode (Bluesy / Classic Rock Vibe)</option>
+            <option value="exotic">Harmonic Scale: Cinematic Neo-Soul Extension Key</option>
+        </select>
+        <select id="lengthSelect">
+            <option value="short">Dynamic Sequence (Play tracks straight through)</option>
+            <option value="30">Fixed Timeline Arrangement: 30 Seconds</option>
+            <option value="180">Fixed Timeline Arrangement: 3 Minutes</option>
+        </select>
+    </div>
+
+    <div class="section-box">
+        <h2>Studio Mixer & FX Console</h2>
+        <div class="mixer-grid">
+            <div class="mixer-row">
+                <label for="mixVocal">Lead Vocal Singer (Connected Legato)</label>
+                <input type="checkbox" id="mixVocal" checked>
+            </div>
+            <div class="mixer-row">
+                <label for="mixPiano">Grand Piano Backing (Spatial Right Panned)</label>
+                <input type="checkbox" id="mixPiano" checked>
+            </div>
+            <div class="mixer-row">
+                <label for="mixGuitar">Acoustic Guitar Plucks (Spatial Left Panned)</label>
+                <input type="checkbox" id="mixGuitar" checked>
+            </div>
+            <div class="mixer-row">
+                <label for="mixDrums">Percussion Drum Machine</label>
+                <input type="checkbox" id="mixDrums" checked>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <div class="btn-row">
+            <button id="btnPlay">Play Live Mix</button>
+            <button id="btnStop" disabled>Stop</button>
+        </div>
+        <button id="btnRecord" class="btn-record">Record & Download Master</button>
+    </div>
+
+    <div class="section-box">
+        <h2>DAW Matrix Output Monitor</h2>
+        <div class="mixer-grid">
+            <div class="status-row">
+                <span style="color: #888888;">Active Singer Track:</span>
+                <span id="monitorWord" class="status-val">—</span>
+            </div>
+            <div class="status-row">
+                <span style="color: #888888;">Step Parameters:</span>
+                <span id="monitorSpecs" class="status-val">System Ready</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const PITCH_MAP = {
+        'l': 196.00, 'm': 293.66, 'h': 440.00,
+        'do': 261.63, 're': 293.66, 'mi': 329.63, 'fa': 349.23, 'so': 392.00, 'la': 440.00, 'di': 493.88
+    };
+
+    const SCALES = {
+        major: [
+            [261.63, 329.63, 392.00], [196.00, 246.94, 293.66], [220.00, 261.63, 329.63], [174.61, 218.27, 261.63]
+        ],
+        minor: [
+            [220.00, 261.63, 329.63], [174.61, 218.27, 261.63], [293.66, 349.23, 440.00], [196.00, 233.08, 293.66]
+        ],
+        dorian: [
+            [220.00, 261.63, 329.63], [293.66, 349.23, 440.00], [196.00, 246.94, 293.66], [174.61, 220.00, 261.63]
+        ],
+        phrygian: [
+            [164.81, 196.00, 246.94], [174.61, 220.00, 261.63], [196.00, 246.94, 293.66], [146.83, 174.61, 220.00]
+        ],
+        mixolydian: [
+            [196.00, 246.94, 293.66], [146.83, 174.61, 220.00], [174.61, 218.27, 261.63], [220.00, 261.63, 329.63]
+        ],
+        exotic: [
+            [220.00, 277.18, 329.63], [174.61, 220.00, 261.63], [246.94, 311.13, 369.99], [293.66, 369.99, 440.00]
+        ]
+    };
+
+    let audioCtx = null, isPlaying = false, recordMode = false, timers = [];
+    let mediaRecorder = null, recordedChunks = [], destNode = null;
+    let masterVocalGain = null, echoDelayNode = null, echoGainNode = null;
+    let lastVocalOsc = null; 
+
+    const trackLyrics = document.getElementById('trackLyrics');
+    const trackBeats = document.getElementById('trackBeats');
+    const trackPitches = document.getElementById('trackPitches');
+    const genreSelect = document.getElementById('genreSelect');
+    const vocalProfileSelect = document.getElementById('vocalProfileSelect');
+    const scaleSelect = document.getElementById('scaleSelect');
+    const lengthSelect = document.getElementById('lengthSelect');
+    const mixVocal = document.getElementById('mixVocal');
+    const mixPiano = document.getElementById('mixPiano');
+    const mixGuitar = document.getElementById('mixGuitar');
+    const mixDrums = document.getElementById('mixDrums');
+    const btnPlay = document.getElementById('btnPlay');
+    const btnStop = document.getElementById('btnStop');
+    const btnRecord = document.getElementById('btnRecord');
+    const monitorWord = document.getElementById('monitorWord');
+    const monitorSpecs = document.getElementById('monitorSpecs');
+
+    function setupAudioEngine() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            destNode = audioCtx.createMediaStreamDestination();
+
+            masterVocalGain = audioCtx.createGain();
+            echoDelayNode = audioCtx.createDelay();
+            echoGainNode = audioCtx.createGain();
+
+            echoDelayNode.delayTime.setValueAtTime(0.36, audioCtx.currentTime);
+            echoGainNode.gain.setValueAtTime(0.25, audioCtx.currentTime);
+
+            masterVocalGain.connect(audioCtx.destination);
+            masterVocalGain.connect(echoDelayNode);
+            echoDelayNode.connect(echoGainNode);
+            echoGainNode.connect(masterVocalGain); 
+            if (destNode) masterVocalGain.connect(destNode);
+        }
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    function soundNode(freq, duration, type, vol, routeToggle, spatialPan = 0) {
+        if (!audioCtx || !routeToggle || freq <= 0) return null;
+        
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        const panner = audioCtx.createStereoPanner ? audioCtx.createStereoPanner() : null;
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(vol, audioCtx.currentTime + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+
+        if (panner) {
+            panner.pan.setValueAtTime(spatialPan, audioCtx.currentTime);
+            osc.connect(gain).connect(panner);
+            panner.connect(audioCtx.destination);
+            if (recordMode && destNode) panner.connect(destNode);
+        } else {
+            osc.connect(gain).connect(audioCtx.destination);
+            if (recordMode && destNode) gain.connect(destNode);
+        }
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+        return osc;
+    }
+
+    function triggerSingerVoice(freq, duration, type, vol, isNextConnected = true, profile = 'female') {
+        if (!audioCtx || !mixVocal.checked || freq <= 0) return null;
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        let targetFreq = freq;
+        let vocalWaveType = type;
+
+        if (profile === 'male') {
+            targetFreq = freq * 0.5; 
+            vocalWaveType = 'sawtooth'; 
+        } else if (profile === 'child') {
+            targetFreq = freq * 2.0; 
+            vocalWaveType = 'triangle';
+        } else if (profile === 'whistle') {
+            targetFreq = freq * 4.0; 
+            vocalWaveType = 'sine';
+        } else {
+            targetFreq = freq * 1.0; 
+            vocalWaveType = 'triangle';
+        }
+
+        osc.type = vocalWaveType;
+
+        if (lastVocalOsc && typeof lastVocalOsc.frequency.value === 'number') {
+            osc.frequency.setValueAtTime(lastVocalOsc.frequency.value, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(targetFreq, audioCtx.currentTime + 0.08);
+        } else {
+            osc.frequency.setValueAtTime(targetFreq, audioCtx.currentTime);
+        }
+
+        gain.gain.setValueAtTime(0, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(vol, audioCtx.currentTime + 0.01);
+
+        let holdDuration = isNextConnected ? (duration + 0.06) : (duration - 0.02);
+        if (holdDuration < 0.01) holdDuration = 0.01;
+
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime + (holdDuration * 0.8));
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + holdDuration);
+
+        osc.connect(gain).connect(masterVocalGain);
+        
+        osc.start();
+        osc.stop(audioCtx.currentTime + holdDuration);
+        
+        lastVocalOsc = osc;
+        return osc;
+    }
+
+    function triggerDrum(type, genre, volMultiplier = 1.0) {
+        if (!audioCtx || !mixDrums.checked) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        if (type === 'kick') {
+            let startFreq = ['hiphop', 'neosoul'].includes(genre) ? 75 : (['lofi', 'cyberpunk'].includes(genre) ? 85 : 140);
+            let duration = ['hiphop', 'dnb'].includes(genre) ? 0.22 : 0.12;
+            osc.frequency.setValueAtTime(startFreq, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            gain.gain.setValueAtTime(0.3 * volMultiplier, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+            osc.connect(gain).connect(audioCtx.destination);
+            if (recordMode && destNode) gain.connect(destNode);
+            osc.start(); osc.stop(audioCtx.currentTime + duration);
+        } else if (type === 'hat') {
+            const bufferSize = audioCtx.sampleRate * 0.03;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = buffer;
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'highpass';
+            filter.frequency.setValueAtTime(genre === 'lofi' ? 5500 : 9200, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.04 * volMultiplier, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.03);
+            noise.connect(filter); filter.connect(gain);
+            gain.connect(audioCtx.destination);
+            if (recordMode && destNode) gain.connect(destNode);
+            noise.start();
+        }
+    }
+
+    function compileMatrixTracks() {
+        const lyrics = trackLyrics.value.trim().split(/\s+/).filter(Boolean);
+        const beatsRaw = trackBeats.value.trim().split(/\s+/).filter(Boolean);
+        const pitchesRaw = trackPitches.value.trim().split(/\s+/).filter(Boolean);
+
+        if (lyrics.length === 0) return null;
+
+        const compiledMatrix = [];
+        for (let i = 0; i < lyrics.length; i++) {
+            let beatVal = parseFloat(beatsRaw[i]);
+            if (isNaN(beatVal) || beatVal <= 0) beatVal = 1.0;
+
+            let pitchString = (pitchesRaw[i] || 'M').toLowerCase();
+            let freqTarget = PITCH_MAP[pitchString] || PITCH_MAP['m'];
+
+            compiledMatrix.push({
+                word: lyrics[i],
+                beats: beatVal,
+                frequency: freqTarget,
+                pitchLabel: pitchString.toUpperCase()
+            });
+        }
+        return compiledMatrix;
+    }
+
+    function startEngine(isRecordingSetup = false) {
+        setupAudioEngine();
+        let songMatrix = compileMatrixTracks();
+        const genre = genreSelect.value;
+        const vocalIdentity = vocalProfileSelect.value;
+        const scaleKey = scaleSelect.value;
+        const lengthSetting = lengthSelect.value;
+        const CHORDS = SCALES[scaleKey] || SCALES.major;
+
+        if (!songMatrix) {
+            alert("Please fill your Workspace tracks to play.");
+            return;
+        }
+
+        if (lengthSetting !== 'short') {
+            const targetSeconds = parseInt(lengthSetting);
+            const loopBuffer = JSON.parse(JSON.stringify(songMatrix));
+            let currentEstimate = songMatrix.reduce((acc, s) => acc + (s.beats * 0.4), 0);
+            while (currentEstimate < targetSeconds) {
+                songMatrix = songMatrix.concat(JSON.parse(JSON.stringify(loopBuffer)));
+                currentEstimate = songMatrix.reduce((acc, s) => acc + (s.beats * 0.4), 0);
+            }
+        }
+
+        isPlaying = true; recordMode = isRecordingSetup; lastVocalOsc = null;
+        btnPlay.disabled = true; btnRecord.disabled = true; btnStop.disabled = false;
+
+        if (recordMode) {
+            btnRecord.classList.add('recording-active');
+            btnRecord.innerText = "Recording Live Master...";
+            recordedChunks = [];
+            mediaRecorder = new MediaRecorder(destNode.stream);
+            mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
+            mediaRecorder.onstop = saveFile; mediaRecorder.start();
+        }
+
+        let bpmBase = 120, voiceWave = 'triangle', polyWave = 'sine';
+        if (genre === 'lofi') { bpmBase = 75; voiceWave = 'sine'; polyWave = 'sine'; }
+        else if (genre === 'hiphop') { bpmBase = 90; voiceWave = 'triangle'; polyWave = 'sine'; }
+        else if (genre === 'rock') { bpmBase = 135; voiceWave = 'sawtooth'; polyWave = 'sawtooth'; }
+        else if (genre === 'synthwave') { bpmBase = 110; voiceWave = 'sawtooth'; polyWave = 'sawtooth'; }
+        else if (genre === 'dnb') { bpmBase = 174; voiceWave = 'sine'; polyWave = 'triangle'; }
+        else if (genre === 'neosoul') { bpmBase = 84; voiceWave = 'triangle'; polyWave = 'sine'; }
+        else if (genre === 'cyberpunk') { bpmBase = 100; voiceWave = 'sawtooth'; polyWave = 'sawtooth'; }
+
+        const secondsPerBeat = 60 / bpmBase;
+        let runningTimelineClock = 0;
+
+        for (let j = 0; j < 4; j++) {
+            const introChordIdx = Math.floor(Math.random() * CHORDS.length);
+            const introDuration = secondsPerBeat * 2;
+            
+            const introTimer = setTimeout(() => {
+                if (!isPlaying) return;
+                monitorWord.innerText = "[ STUDIO INTRO JAM ]";
+                monitorSpecs.innerText = `Key Mode Scale Matrix Active`;
+                
+                if (mixPiano.checked) {
+                    CHORDS[introChordIdx].forEach(f => soundNode(f * 0.5, introDuration, polyWave, 0.09, true, 0.45)); 
+                }
+                if (mixGuitar.checked && j % 2 === 0) {
+                    CHORDS[introChordIdx].forEach((f, idx) => soundNode(f, introDuration - (idx * 0.05), voiceWave, 0.04, true, -0.45)); 
+                }
+                if (mixDrums.checked) {
+                    triggerDrum('kick', genre, 0.9);
+                    setTimeout(() => { if (isPlaying) triggerDrum('hat', genre, 0.7); }, (introDuration / 2) * 1000);
+                }
+            }, runningTimelineClock * 1000);
+            timers.push(introTimer);
+            runningTimelineClock += introDuration;
+        }
+
+        songMatrix.forEach((step, index) => {
+            const currentStepDuration = step.beats * secondsPerBeat;
+            const nextStep = songMatrix[index + 1];
+            const isNextConnected = nextStep && nextStep.word !== '_';
+
+            const trackingTimer = setTimeout(() => {
+                if (!isPlaying) return;
+
+                const isRestCommand = step.word === '_';
+
+                monitorWord.innerText = isRestCommand ? "[ BREATH REST ]" : step.word;
+                monitorSpecs.innerText = `${step.beats} Beats | FX Multipliers Active`;
+
+                if (!isRestCommand) {
+                    triggerSingerVoice(step.frequency, currentStepDuration, voiceWave, 0.15, isNextConnected, vocalIdentity);
+                } else {
+                    lastVocalOsc = null; 
+                }
+
+                if (index % 4 === 0) {
+                    const chordIdx = Math.floor(Math.random() * CHORDS.length);
+                    if (mixPiano.checked) {
+                        CHORDS[chordIdx].forEach(f => soundNode(f * 0.5, currentStepDuration * 1.9, polyWave, 0.08, true, 0.45)); 
+                    }
+                    if (mixGuitar.checked && !isRestCommand) {
+                        CHORDS[chordIdx].forEach((f, idx) => {
+                            setTimeout(() => {
+                                if (isPlaying) soundNode(f, currentStepDuration, voiceWave, 0.03, true, -0.45); 
+                            }, idx * 60);
+                        });
+                    }
+                }
+
+                if (step.beats >= 1) {
+                    triggerDrum('kick', genre, 1.0);
+                    if (step.beats >= 2) {
+                        setTimeout(() => { if (isPlaying) triggerDrum('hat', genre, 0.8); }, (currentStepDuration / 2) * 1000);
+                    }
+                } else {
+                    triggerDrum('hat', genre, 0.6);
+                }
+
+                if (index === songMatrix.length - 1) {
+                    setTimeout(haltEngine, currentStepDuration * 1000);
+                }
+            }, runningTimelineClock * 1000);
+
+            timers.push(trackingTimer);
+            runningTimelineClock += currentStepDuration;
+        });
+    }
+
+    function saveFile() {
+        const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url; anchor.download = 'pro-studio-mix.webm';
+        document.body.appendChild(anchor); anchor.click();
+        document.body.removeChild(anchor); URL.revokeObjectURL(url);
+    }
+
+    function haltEngine() {
+        isPlaying = false; btnPlay.disabled = false; btnRecord.disabled = false; btnStop.disabled = true;
+        btnRecord.classList.remove('recording-active'); btnRecord.innerText = "Record & Download Master";
+        monitorWord.innerText = "—"; monitorSpecs.innerText = "System Ready";
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+        timers.forEach(t => clearTimeout(t)); timers = []; lastVocalOsc = null; recordMode = false;
+    }
+
+    btnPlay.addEventListener('click', () => startEngine(false));
+    btnRecord.addEventListener('click', () => startEngine(true));
+    btnStop.addEventListener('click', haltEngine);
+</script>
+
+</body>
+</html>
