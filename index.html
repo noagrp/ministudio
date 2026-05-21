@@ -67,7 +67,6 @@
             color: #cccccc;
         }
 
-        /* Collapsible Dropdown Help Panel Styles */
         .guide-details {
             width: 100%;
             border: 1px solid #ffffff;
@@ -126,7 +125,7 @@
             font-family: monospace;
         }
 
-        select {
+        select, .duration-input-wrapper input {
             width: 100%;
             background-color: #000000;
             border: 1px solid #ffffff;
@@ -136,12 +135,52 @@
             outline: none;
             cursor: pointer;
             appearance: none;
+            border-radius: 0;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        select {
             background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'><path stroke='%23ffffff' stroke-width='1' d='M1 1l4 4 4-4'/></svg>");
             background-repeat: no-repeat;
             background-position: right 12px center;
-            letter-spacing: 0.5px;
-            border-radius: 0;
+        }
+
+        /* Flexible Duration input section layout adjustments */
+        .duration-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
             margin-bottom: 8px;
+        }
+
+        .duration-container label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #888888;
+        }
+
+        .duration-input-wrapper {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .duration-input-wrapper input {
+            margin-bottom: 0;
+            padding-right: 48px;
+            font-family: monospace;
+        }
+
+        .duration-input-wrapper .unit-tag {
+            position: absolute;
+            right: 12px;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #888888;
+            letter-spacing: 0.5px;
+            pointer-events: none;
         }
 
         select:last-child {
@@ -191,22 +230,32 @@
         .mixer-grid {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 4px;
         }
 
         .mixer-row {
             display: flex;
+            width: 100%;
+        }
+
+        .mixer-label-block {
+            display: flex;
             align-items: center;
             justify-content: space-between;
+            width: 100%;
+            padding: 12px 4px; 
             font-size: 13px;
             letter-spacing: 0.5px;
+            cursor: pointer;
+            user-select: none;
         }
 
         input[type="checkbox"] {
             accent-color: #ffffff;
             cursor: pointer;
-            width: 16px;
-            height: 16px;
+            width: 22px; 
+            height: 22px;
+            margin-left: 12px;
         }
 
         .btn-group {
@@ -280,7 +329,6 @@
         <div class="disclaimer">Notice: High-fidelity web audio track sequencer pipeline.</div>
     </header>
 
-    <!-- NEW INTERACTIVE HOW-TO PANEL MODULE -->
     <details class="guide-details">
         <summary class="guide-summary">How-To Production Guide & Cheatsheet</summary>
         <div class="guide-content">
@@ -354,31 +402,43 @@
             <option value="mixolydian">Harmonic Scale: Mixolydian Mode (Bluesy / Classic Rock Vibe)</option>
             <option value="exotic">Harmonic Scale: Cinematic Neo-Soul Extension Key</option>
         </select>
-        <select id="lengthSelect">
-            <option value="short">Dynamic Sequence (Play tracks straight through)</option>
-            <option value="30">Fixed Timeline Arrangement: 30 Seconds</option>
-            <option value="180">Fixed Timeline Arrangement: 3 Minutes</option>
-        </select>
+        
+        <!-- UPGRADED: Flex arrangement slider replacement with custom input clamping layout -->
+        <div class="duration-container">
+            <label for="lengthSelect">Arrangement Timeline Loop Cutoff (Type short or 30-180)</label>
+            <div class="duration-input-wrapper">
+                <input type="text" id="lengthSelect" value="short" placeholder="Type 'short' or total seconds (30-180)">
+                <span class="unit-tag">Sec</span>
+            </div>
+        </div>
     </div>
 
     <div class="section-box">
         <h2>Studio Mixer & FX Console</h2>
         <div class="mixer-grid">
             <div class="mixer-row">
-                <label for="mixVocal">Lead Vocal Singer (Connected Legato)</label>
-                <input type="checkbox" id="mixVocal" checked>
+                <label class="mixer-label-block" for="mixVocal">
+                    <span>Lead (Connected Legato)</span>
+                    <input type="checkbox" id="mixVocal" checked>
+                </label>
             </div>
             <div class="mixer-row">
-                <label for="mixPiano">Grand Piano Backing (Spatial Right Panned)</label>
-                <input type="checkbox" id="mixPiano" checked>
+                <label class="mixer-label-block" for="mixPiano">
+                    <span>Grand Piano Backing (Spatial Right Panned)</span>
+                    <input type="checkbox" id="mixPiano" checked>
+                </label>
             </div>
             <div class="mixer-row">
-                <label for="mixGuitar">Acoustic Guitar Plucks (Spatial Left Panned)</label>
-                <input type="checkbox" id="mixGuitar" checked>
+                <label class="mixer-label-block" for="mixGuitar">
+                    <span>Acoustic Guitar Plucks (Spatial Left Panned)</span>
+                    <input type="checkbox" id="mixGuitar" checked>
+                </label>
             </div>
             <div class="mixer-row">
-                <label for="mixDrums">Percussion Drum Machine</label>
-                <input type="checkbox" id="mixDrums" checked>
+                <label class="mixer-label-block" for="mixDrums">
+                    <span>Percussion Drum Machine</span>
+                    <input type="checkbox" id="mixDrums" checked>
+                </label>
             </div>
         </div>
     </div>
@@ -395,7 +455,7 @@
         <h2>DAW Matrix Output Monitor</h2>
         <div class="mixer-grid">
             <div class="status-row">
-                <span style="color: #888888;">Active Singer Track:</span>
+                <span style="color: #888888;">Lead Track:</span>
                 <span id="monitorWord" class="status-val">—</span>
             </div>
             <div class="status-row">
@@ -619,7 +679,9 @@
         const genre = genreSelect.value;
         const vocalIdentity = vocalProfileSelect.value;
         const scaleKey = scaleSelect.value;
-        const lengthSetting = lengthSelect.value;
+        
+        // Clean processing for the numeric field input value mapping bounds
+        let lengthSetting = lengthSelect.value.trim().toLowerCase();
         const CHORDS = SCALES[scaleKey] || SCALES.major;
 
         if (!songMatrix) {
@@ -628,7 +690,12 @@
         }
 
         if (lengthSetting !== 'short') {
-            const targetSeconds = parseInt(lengthSetting);
+            let targetSeconds = parseInt(lengthSetting);
+            
+            // Hard safety clamping checks for the beta boundaries
+            if (isNaN(targetSeconds) || targetSeconds < 30) targetSeconds = 30;
+            if (targetSeconds > 180) targetSeconds = 180;
+            
             const loopBuffer = JSON.parse(JSON.stringify(songMatrix));
             let currentEstimate = songMatrix.reduce((acc, s) => acc + (s.beats * 0.4), 0);
             while (currentEstimate < targetSeconds) {
