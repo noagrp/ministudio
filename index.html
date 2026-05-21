@@ -808,7 +808,7 @@
         const blob = new Blob(recordedChunks, { type: 'audio/webm' });
         const url = URL.createObjectURL(blob);
         const anchor = document.createElement('a');
-        anchor.href = url; anchor.download = 'pro-studio-mix.webm';
+        anchor.href = url; anchor.download = 'mini-studio-mix.webm';
         document.body.appendChild(anchor); anchor.click();
         document.body.removeChild(anchor); URL.revokeObjectURL(url);
     }
