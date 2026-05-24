@@ -141,12 +141,12 @@
         }
 
         select {
+            /* Embedded localized inline SVGs to remain 100% functional offline without external URL assets */
             background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'><path stroke='%23ffffff' stroke-width='1' d='M1 1l4 4 4-4'/></svg>");
             background-repeat: no-repeat;
             background-position: right 12px center;
         }
 
-        /* Flexible Duration input section layout adjustments */
         .duration-container {
             display: flex;
             flex-direction: column;
@@ -403,7 +403,6 @@
             <option value="exotic">Harmonic Scale: Cinematic Neo-Soul Extension Key</option>
         </select>
         
-        <!-- UPGRADED: Flex arrangement slider replacement with custom input clamping layout -->
         <div class="duration-container">
             <label for="lengthSelect">Arrangement Timeline Loop Cutoff (Type short or 30-180)</label>
             <div class="duration-input-wrapper">
@@ -549,13 +548,22 @@
         gain.gain.linearRampToValueAtTime(vol, audioCtx.currentTime + 0.01);
         gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
 
+        // Fixed routing logic: Harmonies route to master mix so they are audible alongside vocals
         if (panner) {
             panner.pan.setValueAtTime(spatialPan, audioCtx.currentTime);
             osc.connect(gain).connect(panner);
-            panner.connect(audioCtx.destination);
+            if (masterVocalGain) {
+                panner.connect(masterVocalGain);
+            } else {
+                panner.connect(audioCtx.destination);
+            }
             if (recordMode && destNode) panner.connect(destNode);
         } else {
-            osc.connect(gain).connect(audioCtx.destination);
+            if (masterVocalGain) {
+                osc.connect(gain).connect(masterVocalGain);
+            } else {
+                osc.connect(gain).connect(audioCtx.destination);
+            }
             if (recordMode && destNode) gain.connect(destNode);
         }
 
@@ -680,7 +688,6 @@
         const vocalIdentity = vocalProfileSelect.value;
         const scaleKey = scaleSelect.value;
         
-        // Clean processing for the numeric field input value mapping bounds
         let lengthSetting = lengthSelect.value.trim().toLowerCase();
         const CHORDS = SCALES[scaleKey] || SCALES.major;
 
@@ -689,18 +696,27 @@
             return;
         }
 
+        let bpmBase = 120, voiceWave = 'triangle', polyWave = 'sine';
+        if (genre === 'lofi') { bpmBase = 75; voiceWave = 'sine'; polyWave = 'sine'; }
+        else if (genre === 'hiphop') { bpmBase = 90; voiceWave = 'triangle'; polyWave = 'sine'; }
+        else if (genre === 'rock') { bpmBase = 135; voiceWave = 'sawtooth'; polyWave = 'sawtooth'; }
+        else if (genre === 'synthwave') { bpmBase = 110; voiceWave = 'sawtooth'; polyWave = 'sawtooth'; }
+        else if (genre === 'dnb') { bpmBase = 174; voiceWave = 'sine'; polyWave = 'triangle'; }
+        else if (genre === 'neosoul') { bpmBase = 84; voiceWave = 'triangle'; polyWave = 'sine'; }
+        else if (genre === 'cyberpunk') { bpmBase = 100; voiceWave = 'sawtooth'; polyWave = 'sawtooth'; }
+
+        const secondsPerBeat = 60 / bpmBase;
+
         if (lengthSetting !== 'short') {
             let targetSeconds = parseInt(lengthSetting);
-            
-            // Hard safety clamping checks for the beta boundaries
             if (isNaN(targetSeconds) || targetSeconds < 30) targetSeconds = 30;
             if (targetSeconds > 180) targetSeconds = 180;
             
             const loopBuffer = JSON.parse(JSON.stringify(songMatrix));
-            let currentEstimate = songMatrix.reduce((acc, s) => acc + (s.beats * 0.4), 0);
+            let currentEstimate = songMatrix.reduce((acc, s) => acc + (s.beats * secondsPerBeat), 0);
             while (currentEstimate < targetSeconds) {
                 songMatrix = songMatrix.concat(JSON.parse(JSON.stringify(loopBuffer)));
-                currentEstimate = songMatrix.reduce((acc, s) => acc + (s.beats * 0.4), 0);
+                currentEstimate = songMatrix.reduce((acc, s) => acc + (s.beats * secondsPerBeat), 0);
             }
         }
 
@@ -716,16 +732,6 @@
             mediaRecorder.onstop = saveFile; mediaRecorder.start();
         }
 
-        let bpmBase = 120, voiceWave = 'triangle', polyWave = 'sine';
-        if (genre === 'lofi') { bpmBase = 75; voiceWave = 'sine'; polyWave = 'sine'; }
-        else if (genre === 'hiphop') { bpmBase = 90; voiceWave = 'triangle'; polyWave = 'sine'; }
-        else if (genre === 'rock') { bpmBase = 135; voiceWave = 'sawtooth'; polyWave = 'sawtooth'; }
-        else if (genre === 'synthwave') { bpmBase = 110; voiceWave = 'sawtooth'; polyWave = 'sawtooth'; }
-        else if (genre === 'dnb') { bpmBase = 174; voiceWave = 'sine'; polyWave = 'triangle'; }
-        else if (genre === 'neosoul') { bpmBase = 84; voiceWave = 'triangle'; polyWave = 'sine'; }
-        else if (genre === 'cyberpunk') { bpmBase = 100; voiceWave = 'sawtooth'; polyWave = 'sawtooth'; }
-
-        const secondsPerBeat = 60 / bpmBase;
         let runningTimelineClock = 0;
 
         for (let j = 0; j < 4; j++) {
@@ -779,12 +785,13 @@
                     if (mixGuitar.checked && !isRestCommand) {
                         CHORDS[chordIdx].forEach((f, idx) => {
                             setTimeout(() => {
-                                if (isPlaying) soundNode(f, currentStepDuration, voiceWave, 0.03, true, -0.45); 
+                                if (isPlaying) soundNode(f, currentStepDuration, voiceWave, 0.04, true, -0.45); 
                             }, idx * 60);
                         });
                     }
                 }
 
+                // Fine-tuned decimal calculation checks to perfectly schedule drums for short steps like 0.25 and 0.75
                 if (step.beats >= 1) {
                     triggerDrum('kick', genre, 1.0);
                     if (step.beats >= 2) {
@@ -792,6 +799,9 @@
                     }
                 } else {
                     triggerDrum('hat', genre, 0.6);
+                    if (step.beats === 0.75) {
+                        setTimeout(() => { if (isPlaying) triggerDrum('hat', genre, 0.4); }, (currentStepDuration * 0.5) * 1000);
+                    }
                 }
 
                 if (index === songMatrix.length - 1) {
